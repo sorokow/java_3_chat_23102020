@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
@@ -144,6 +145,8 @@ public class Controller implements Initializable {
                             }
                         } else {
                             textArea.appendText(str + "\n");
+                            writeToFile(nickname,str);
+
                         }
                     }
                 } catch (RuntimeException e) {
@@ -165,6 +168,19 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void writeToFile(String nickname,String message){
+        try(FileWriter writer = new FileWriter(nickname+".txt", true))
+        {
+            writer.write(message + "\n");
+            writer.flush();
+        }
+        catch(IOException ex){
+
+            System.out.println(ex.getMessage());
+        }
+
     }
 
     public void sendMsg(ActionEvent actionEvent) {
