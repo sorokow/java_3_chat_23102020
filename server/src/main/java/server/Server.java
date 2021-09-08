@@ -3,10 +3,7 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -14,7 +11,6 @@ public class Server {
     private List<ClientHandler> clients;
     private static AuthService authService;
     protected static Connection connection;
-    protected static Statement stmt;
 
     public Server() {
         clients = new CopyOnWriteArrayList<>();
@@ -57,18 +53,16 @@ public class Server {
 
     public void rename(String oldNickname, String newNickname){
         try {
-            stmt.executeUpdate("UPDATE Users SET nick='" + newNickname + "' WHERE nick='"+ oldNickname +"';");
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE Users SET nick=? WHERE nick=?");
+            preparedStatement.setString(1,newNickname);
+            preparedStatement.setString(2,oldNickname);
+            preparedStatement.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
     private static void disconnectDB() {
-        try {
-            stmt.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
         try {
             connection.close();
         } catch (SQLException throwables) {
@@ -79,8 +73,8 @@ public class Server {
     private static void connectDB() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         connection = DriverManager.getConnection("jdbc:sqlite:UsersBD.db");
-        stmt = connection.createStatement();
-        stmt.executeUpdate("DELETE FROM Users");
+//        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Users");
+//        preparedStatement.executeUpdate();
     }
 
     public void broadcastMsg(ClientHandler sender, String msg) {
