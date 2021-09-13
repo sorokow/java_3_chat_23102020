@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientHandler {
     DataInputStream in;
@@ -22,8 +24,8 @@ public class ClientHandler {
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
             System.out.println("Client connected " + socket.getRemoteSocketAddress());
-
-            new Thread(() -> {
+            ExecutorService executorService = Executors.newCachedThreadPool();
+            executorService.execute(() -> {
                 try {
                     socket.setSoTimeout(50000);
 
@@ -111,7 +113,8 @@ public class ClientHandler {
                         e.printStackTrace();
                     }
                 }
-            }).start();
+            });
+            executorService.shutdown();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -119,21 +122,6 @@ public class ClientHandler {
     }
 
     private void getLastMessage() throws IOException {
-//        try {
-//            File file = new File("LogServer.txt");
-//            FileReader fr = new FileReader(file);
-//            BufferedReader reader = new BufferedReader(fr);
-//            String line = reader.readLine();
-//            while (line != null) {
-//                System.out.println(line);
-//                sendMsgNoLog(line);
-//                line = reader.readLine();
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         List<String> tmp = new ArrayList<String>();
         String strpath="LogServer.txt";
         FileReader fr = null;

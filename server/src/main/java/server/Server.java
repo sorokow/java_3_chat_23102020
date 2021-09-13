@@ -73,8 +73,7 @@ public class Server {
     private static void connectDB() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         connection = DriverManager.getConnection("jdbc:sqlite:UsersBD.db");
-//        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM Users");
-//        preparedStatement.executeUpdate();
+
     }
 
     public void broadcastMsg(ClientHandler sender, String msg) {
